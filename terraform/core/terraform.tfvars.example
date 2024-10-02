@@ -1,0 +1,4 @@
+identifier  = "testenv"         #unique ID
+environment = "sbx"             #environment
+gcp_region  = "asia-northeast1" #GCP region, chosen for geographic proximity
+gcp_project = "someprojectname"

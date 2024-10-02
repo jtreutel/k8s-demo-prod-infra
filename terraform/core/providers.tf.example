@@ -1,0 +1,11 @@
+provider "google" {
+  project = "someprojectname"
+  region  = "asia-northeast1"
+}
+
+terraform {
+  backend "gcs" {
+    bucket = "k8s-test-tfstate-foobar"
+    prefix = "env1/core/"
+  }
+}
