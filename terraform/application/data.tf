@@ -9,6 +9,8 @@ data "terraform_remote_state" "core" {
 data "google_client_config" "provider" {}
 
 data "kubernetes_ingress_v1" "demoapp_ingress" {
+  count = local.app_deployed ? 1 : 0
+
   metadata {
     name      = "demoapp-ingress"
     namespace = "demoapp"
