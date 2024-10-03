@@ -6,7 +6,7 @@ provider "google" {
 terraform {
   backend "gcs" {
     bucket = "k8s-test-tfstate-c74f3a"
-    prefix = "env1/services/"
+    prefix = "env1/application/"
   }
 }
 
