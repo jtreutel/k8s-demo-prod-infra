@@ -1,7 +1,7 @@
 data "terraform_remote_state" "core" {
   backend = "gcs"
   config = {
-    bucket = "k8s-test-tfstate-u518zm"
+    bucket = "k8s-test-tfstate-c74f3a"
     prefix = "env1/core/"
   }
 }
