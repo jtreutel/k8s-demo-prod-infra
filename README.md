@@ -3,39 +3,70 @@
 Terraform plan for deploying and configuring a GKE cluster, installing shared services, and deploying GCP infrastructure to support the production application ("demoapp").
 
 
+
 ## Features
 - **Separation of Concerns** 
   - Limits "blast radius" by grouping infrastructure in a way that minimizes the number of infra components that must be "touched" when making changes
 - **Reusability**
   - The terraform plans are parameterized in such a way that they can easily be used to deploy additional environments (e.g. nonprod)
 - **Secure and Transparent**
-  - Deployment is performed via a service account that cannot be accessed by other developers
-  - Deployments are only performed via GHA, making all changes to infrastructure visible and auditable
+  - Deployment is performed via a dedicated service account, access to which is tightly controlled via GCP IAM
+  - Deployments are only performed using this service account via GHA, making all changes to infrastructure visible and auditable via git history
 
-## Structure 
+## Structure & Usage
 
-### Terraform/Core
+### Repo Structure
 
-Sets up basic Kubernetes infrastructure in GCP.  Deploys the following:
-  - GCP VPC and subnets
-  - GKE cluster
-  - GKE nodepool (defined separately for easier management)
-  - GCP Service Account for cluster access (see [TODO](#todo) below)
+```
+.
+├── core            GKE cluster and related GCP resources
+├── services        Shared Kubernetes services
+└── application     Production application GCP resources
 
-### Terraform/Services
+```
 
-Sets up shared services on the k8s cluster.  Deploys the following:
-  - ArgoCD
-  - Ingress Nginx controller
-  - kube-prometheus stack, including Prometheus and Grafana (not used, just an example of where this sort of service would go)
-  - Namespaces for the above applictions
-  - DNS records pointing to the nginx ingresses for the above applications
+Below is a description of what each plan does:
 
-### Terraform/Application
+- **core**
+  - Sets up basic Kubernetes infrastructure in GCP
+  - Deploys the following:
+    - GCP VPC and subnets
+    - GKE cluster
+    - GKE nodepool (defined separately for easier management)
+    - GCP Service Account for cluster access (see [TODO](#todo) below)
+- **services**
+  - Sets up shared services on the k8s cluster
+  - Deploys the following:
+    - ArgoCD
+    - Ingress Nginx controller
+    - kube-prometheus stack, including Prometheus and Grafana (not used, just an example of where this sort of service would go)
+    - Namespaces for the above applictions
+    - DNS records pointing to the nginx ingresses for the above applications
+- **application**
+  - Sets up infrastructure to support the application.  
+  - Deploys the following:
+    - Namespace for "demoapp" application
+    - DNS record pointing to the nginx ingress for the "demoapp" application
 
-Sets up infrastructure to support the application.  Deploys the following:
 
-  - DNS record pointing to the nginx ingress for the "demoapp" application
+### Usage
+
+The three plans described above are intended to be run in a specific order:
+
+1. `core`
+2. `services`
+3. `application`
+
+The GHA pipeline requires these plans to be run in this order (see Fig. 1 below).
+
+The `core` plan statefile is referenced by a `terraform_remote_state` data source in both `services` and `application` in order to retrieve cluster information required for making changed to the cluster (see Fig. 2 below).  
+
+
+Figure 1:  
+![Figure 1](./docs/kdpi-gha-flow.png)
+
+Figure 2:  
+![Figure 2](./docs/kdpi-tf-flow.png)
 
 ## Additional Context
 
