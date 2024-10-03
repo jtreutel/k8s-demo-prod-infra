@@ -38,6 +38,28 @@ resource "google_container_cluster" "this" {
 
   datapath_provider = "ADVANCED_DATAPATH"
 
+  monitoring_config {
+    enable_components = [
+      "SYSTEM_COMPONENTS",
+      "APISERVER", 
+      "SCHEDULER", 
+      "CONTROLLER_MANAGER", 
+      "STORAGE", 
+      "HPA", 
+      "POD", 
+      "DAEMONSET", 
+      "DEPLOYMENT", 
+      "STATEFULSET", 
+      "KUBELET", 
+      "CADVISOR"
+    ]
+  }
+
+  logging_config {
+    enable_components = ["SYSTEM_COMPONENTS", "WORKLOADS"]
+  }
+  
+
   # Set deletion protection if this is a production environment
   deletion_protection = contains(["prd", "qal"], var.environment) ? true : false
 }
