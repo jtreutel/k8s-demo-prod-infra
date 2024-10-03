@@ -1,11 +1,11 @@
 provider "google" {
-  project = "someprojectname"
+  project = "demoproj"
   region  = "asia-northeast1"
 }
 
 terraform {
   backend "gcs" {
-    bucket = "k8s-test-tfstate-foobar"
+    bucket = "k8s-test-tfstate-c74f3a"
     prefix = "env1/core/"
   }
 }
