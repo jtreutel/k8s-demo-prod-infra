@@ -1,0 +1,58 @@
+name: Push to feature branch
+
+on:
+  push:
+    branches:
+      - 'master'
+      - 'develop' #debug
+
+ 
+env:
+    TF_LOG: INFO
+    TF_INPUT: false
+
+jobs: 
+    terraform-core:
+        environment: demogcp
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                shell: bash
+                working-directory: ./terraform/core
+        steps:
+            # Checkout the repository to the GitHub Actions runner
+            - name: Checkout
+              uses: actions/checkout@v3
+            # Install the selected version of Terraform CLI 
+            - name: Authenticate to GCP
+              uses: 'google-github-actions/auth@v2'
+              with:
+                credentials_json: '${{ secrets.SERVICE_ACCOUNT_KEY }}' # Replace with the name of your GitHub Actions secret
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v2
+              with:
+                terraform_version: "1.7.5"
+
+            - name: Terraform Init
+              id: init
+              run: terraform init 
+
+            - name: Terraform Validate
+              id: validate
+              # Run even if formatting fails
+              if: success() || failure()
+              run: terraform validate
+
+            - name: Terraform Apply
+              id: plan
+              run: terraform plan
+
+    #terraform-services:
+    #    environment: demogcp
+    #    runs-on: ubuntu-latest
+    #    needs: terraform-core
+    #
+    #terraform-application:
+    #    environment: demogcp
+    #    runs-on: ubuntu-latest
+    #    needs: terraform-services
