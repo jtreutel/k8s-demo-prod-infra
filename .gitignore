@@ -1,3 +1,4 @@
-**/terraform.tfvars
-**/providers.tf
+#ignore testing files
+**/*.test
+#don't check in terraform dependencies
 **/.terraform
