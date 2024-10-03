@@ -51,18 +51,6 @@ resource "helm_release" "ingress_nginx" {
   create_namespace = true 
   atomic           = true   
   version          = var.chart_version_ingress_nginx  # peg the chart version to avoid accidental updates
-
-
-/*
-  values = [
-    templatefile(
-        "${path.module}/helm-values/ingress_nginx.yaml",
-        {
-        }
-        )
-  ]
-*/
-
 }
 
 
