@@ -85,7 +85,11 @@ resource "google_container_node_pool" "primary" {
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     service_account = google_service_account.gke_access.email
     oauth_scopes    = [
-      "https://www.googleapis.com/auth/cloud-platform"
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/monitoring.write",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring"
     ]
   }
 }
@@ -103,7 +107,52 @@ resource "google_service_account" "gke_access" {
 
 #Allow the creation of tokens for accessing GKE
 resource "google_project_iam_member" "service_account_token_creator" {
+  for_each = var.gke_sa_roles
+
   project = var.gcp_project
-  role    = "roles/iam.serviceAccountTokenCreator"
+  role    = each.value
   member  = "serviceAccount:${google_service_account.gke_access.email}"
 }
+
+
+
+
+#-------------------------------------------------------------------------------
+# Monitoring and Alerting
+#-------------------------------------------------------------------------------
+
+resource "google_monitoring_alert_policy" "gke_node_cpu_utilization" {
+  display_name = "Demoapp GKE Node CPU Utilization"
+  combiner     = "OR"
+
+  notification_channels = [
+    "projects/demoproj-437500/notificationChannels/1196374165928758087" #TODO: Add resource to TF
+  ]
+  severity = "WARNING"
+
+  conditions {
+    display_name = "Kubernetes Node - CPU allocatable utilization"
+    condition_threshold {
+      filter     = "resource.type = \"k8s_node\" AND resource.labels.cluster_name = \"demoapp-prd-cluster\" AND metric.type = \"kubernetes.io/node/cpu/allocatable_utilization\""
+      duration   = "60s"
+      comparison = "COMPARISON_GT"
+      threshold_value = 0.8
+      aggregations {
+        alignment_period   = "300s"
+        per_series_aligner = "ALIGN_MEAN"
+      }
+      trigger {
+        count = 1
+        percent = 0
+      }
+    }
+  }
+  documentation {
+    subject = "Demoapp GKE Node CPU Utilization > 80%"
+  }
+}
+
+#terraform import google_monitoring_alert_policy.default
+
+
+#projects/demoproj-437500/alertPolicies/12379634767256765061
