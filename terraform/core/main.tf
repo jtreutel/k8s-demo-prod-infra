@@ -151,8 +151,3 @@ resource "google_monitoring_alert_policy" "gke_node_cpu_utilization" {
     subject = "Demoapp GKE Node CPU Utilization > 80%"
   }
 }
-
-#terraform import google_monitoring_alert_policy.default
-
-
-#projects/demoproj-437500/alertPolicies/12379634767256765061
