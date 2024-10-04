@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - 'master'
+      - 'develop'
+      - 'feature/**'
 
  
 env:
@@ -40,9 +42,14 @@ jobs:
               if: success() || failure()
               run: terraform validate
 
-            - name: Terraform Apply
+            - name: Terraform Plan
               id: plan
+              run: terraform plan 
+
+            - name: Terraform Apply
+              id: apply
               run: terraform apply --auto-approve
+              if: ${{ github.ref == 'refs/heads/master' }}
 
     terraform-services:
         environment: demogcp
@@ -74,9 +81,15 @@ jobs:
             if: success() || failure()
             run: terraform validate
 
-          - name: Terraform Apply
+          - name: Terraform Plan
             id: plan
+            run: terraform plan 
+
+
+          - name: Terraform Apply
+            id: apply
             run: terraform apply --auto-approve
+            if: ${{ github.ref == 'refs/heads/master' }}
 
     
     terraform-application:
@@ -109,6 +122,12 @@ jobs:
             if: success() || failure()
             run: terraform validate
 
-          - name: Terraform Apply
+          - name: Terraform Plan
             id: plan
+            run: terraform plan 
+
+
+          - name: Terraform Apply
+            id: apply
             run: terraform apply --auto-approve
+            if: ${{ github.ref == 'refs/heads/master' }}
