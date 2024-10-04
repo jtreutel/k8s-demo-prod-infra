@@ -12,6 +12,9 @@ Terraform plan for deploying and configuring a GKE cluster, installing shared se
 - **Secure and Transparent**
   - Deployment is performed via a dedicated service account, access to which is tightly controlled via GCP IAM
   - Deployments are only performed using this service account via GHA, making all changes to infrastructure visible and auditable via git history
+- **Observability and Alerting**
+  - Basic logging has been configured at the cluster infra and k8s level (both for control plan and workloads)
+  - A proof-of-concept alert has been configured via Terraform to alert when cluster node CPU utilization crosses a threshold
 
 ## Structure & Usage
 
@@ -68,6 +71,21 @@ Figure 1:
 Figure 2:  
 ![Figure 2](./docs/kdpi-tf-flow.png)
 
+
+
+### Monitoring and Alerting
+
+GCP Logging has been enabled for the GKE cluster infrastructure and the Kubernetes cluster, including both the control plane and the workloads.  Logs can be viewed via the GCP console (see Fig. 3 below).  A simple alert has been configured as a "proof-of-concept" to notify when cluster node CPU utilization exceeds >80% (see Fig. 4 below).
+
+Figure 3:  
+[![Figure 3](./docs/gke_logging_t.png)](./docs/gke_logging.png)
+
+
+Figure 4:  
+[![Figure 4](./docs/gke_alerting_t.png)](./docs/gke_alerting.png)
+
+
+
 ## Additional Context
 
 ### Assumptions
@@ -76,6 +94,7 @@ Figure 2:
   - State bucket `k8s-test-tfstate-c74f3a` 
   - Service account `gha-access` for programmatic access from GHA
   - Nginx Ingress TLS cert secrets manually created via certbot CLI
+- GCP alert notification channel already exists
 
 ### TODO
   - General
@@ -92,4 +111,4 @@ Figure 2:
     - Parameterize GKE cluster config for horizontal/vertical cluster scaling
   - Services
     - Automate creation and renewal of TLS certs with certbot (using DNS01 challenge on GCP Cloud DNS)
- 
+    - Add additional IaC for ArgoCD configuration (project CRDs, etc.)
