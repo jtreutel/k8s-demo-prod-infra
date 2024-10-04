@@ -19,6 +19,6 @@ resource "google_dns_record_set" "demoapp" {
   managed_zone = data.google_dns_managed_zone.this.name
 
   rrdatas = [
-    data.kubernetes_ingress_v1.demoapp_ingress.status.0.load_balancer.0.ingress.0.ip
+    data.kubernetes_ingress_v1.demoapp_ingress[0].status.0.load_balancer.0.ingress.0.ip
   ]
 }
