@@ -20,7 +20,7 @@ variable "gcp_project" {
 
 variable "gke_sa_roles" {
   description = "List of roles to be provided for GKE SA"
-  type = set(string)
+  type        = set(string)
   default = [
     "roles/monitoring.viewer",
     "roles/monitoring.metricWriter",

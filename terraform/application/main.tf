@@ -4,7 +4,7 @@ locals {
 
 resource "kubernetes_namespace" "demoapp" {
   metadata {
-    name   = "demoapp"
+    name = "demoapp"
   }
 }
 

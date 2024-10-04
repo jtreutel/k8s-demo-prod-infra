@@ -19,5 +19,5 @@ data "kubernetes_ingress_v1" "demoapp_ingress" {
 
 # Assumes consistent DNS zone naming scheme:  foo.bar.baz -> foo-bar-baz
 data "google_dns_managed_zone" "this" {
-  name     = replace(var.primary_domain, ".", "-")
+  name = replace(var.primary_domain, ".", "-")
 }

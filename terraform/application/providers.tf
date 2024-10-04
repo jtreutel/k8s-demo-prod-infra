@@ -12,12 +12,12 @@ terraform {
 
 # Retrieve an access token as the Terraform runner
 provider "kubernetes" {
-  host  = "https://${data.terraform_remote_state.core.outputs.cluster_endpoint}"
-  token = data.google_client_config.provider.access_token
+  host                   = "https://${data.terraform_remote_state.core.outputs.cluster_endpoint}"
+  token                  = data.google_client_config.provider.access_token
   cluster_ca_certificate = base64decode(data.terraform_remote_state.core.outputs.cluster_ca_certificate)
   exec {
-      api_version = "client.authentication.k8s.io/v1beta1"
-      command     = "gke-gcloud-auth-plugin"
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "gke-gcloud-auth-plugin"
   }
 }
 
@@ -36,12 +36,12 @@ provider "kubectl" {
 
 provider "helm" {
   kubernetes {
-  host  = "https://${data.terraform_remote_state.core.outputs.cluster_endpoint}"
-  cluster_ca_certificate = base64decode(data.terraform_remote_state.core.outputs.cluster_ca_certificate)
-  exec {
+    host                   = "https://${data.terraform_remote_state.core.outputs.cluster_endpoint}"
+    cluster_ca_certificate = base64decode(data.terraform_remote_state.core.outputs.cluster_ca_certificate)
+    exec {
       api_version = "client.authentication.k8s.io/v1beta1"
       command     = "gke-gcloud-auth-plugin"
-  }
+    }
   }
 }
 
